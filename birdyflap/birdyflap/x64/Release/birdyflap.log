@@ -1,0 +1,29 @@
+﻿Сборка начата 22.04.2014 21:42:56.
+     1>Проект "C:\Users\Алексей\documents\visual studio 2013\Projects\birdyflap\birdyflap\birdyflap.vcxproj" в узле 2 (целевые объекты Build).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I"C:\Program Files\SFML\include" /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D SFML_STATIC /D WIN32 /D NDEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"x64\Release\birdyflap.pch" /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt birdyflap.cpp
+         birdyflap.cpp
+     1>birdyflap.cpp(56): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+     1>birdyflap.cpp(63): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+     1>birdyflap.cpp(71): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+     1>birdyflap.cpp(92): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+     1>birdyflap.cpp(97): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+     1>birdyflap.cpp(99): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+     1>birdyflap.cpp(101): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+     1>birdyflap.cpp(106): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+     1>birdyflap.cpp(107): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+     1>birdyflap.cpp(108): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+     1>birdyflap.cpp(109): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+     1>birdyflap.cpp(131): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+     1>birdyflap.cpp(200): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Алексей\documents\visual studio 2013\Projects\birdyflap\x64\Release\birdyflap.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:"C:\Program Files\SFML\lib" "sfml-graphics.lib" "sfml-window.lib" "sfml-system.lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Алексей\documents\visual studio 2013\Projects\birdyflap\x64\Release\birdyflap.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Алексей\documents\visual studio 2013\Projects\birdyflap\x64\Release\birdyflap.lib" /MACHINE:X64 x64\Release\birdyflap.obj
+         x64\Release\stdafx.obj
+         Создание кода
+         Создание кода завершено
+         birdyflap.vcxproj -> C:\Users\Алексей\documents\visual studio 2013\Projects\birdyflap\x64\Release\birdyflap.exe
+     1>Сборка проекта "C:\Users\Алексей\documents\visual studio 2013\Projects\birdyflap\birdyflap\birdyflap.vcxproj" завершена (целевые объекты Build).
+
+Сборка успешно завершена.
+
+Затраченное время: 00:00:02.86
