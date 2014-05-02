@@ -4,9 +4,10 @@
 #include "stdafx.h"
 #include <SFML/Graphics.hpp>
 #include <string>
-#include <iostream> // Debug
-#include <vector>	// Really need for vectors
-#include <fstream>	// For work with data.txt
+#include <iostream>		// Debug
+#include <vector>		// Really need for vectors
+#include <fstream>		// For work with data.ini
+#include <windows.h>	// For window
 
 int distanceView = 4;									// Дальность прорисовки (количество пайпов)
 std::vector<sf::RectangleShape*> pipes;					// Инициализируем массив с пайпами
@@ -22,17 +23,42 @@ sf::RectangleShape playerObj(sf::Vector2f(70, 56));		// Объект игрока
 int g = 6;												// Гравитационная постоянная
 int t = 0;												// Время для рассчета скорости падения
 int v = 0;												// Скорость начальная
-int ctrScore = 102;										// Счет
-int bestScore = 305;																												////////////////////////////////////   ЧТЕНИЕ ИЗ 
-int playerDistance = 0;									// Дистанция, пройденная игроком
+int ctrScore = 0;										// Счет
+int bestScore;											// Переменная, для получения лучшего счета из файла data.ini
 int cross = -1;											// Номер пересекаемого пайпа (нужен для инкремента счета)
 int rotateNum = 0;										// Переменная отвечающая за лимит вращения
 int groundMove = 0;										// Перемещение граунда
-int game = 1;											// Состояние
+int game = 0;											// Состояние
 int swing = 0;											// Взмах крыла
-int goTime = 0;											// Интервал между срабатыванием события Game Over и появлением меню
+int goTime = 40;										// Интервал между срабатыванием события Game Over и появлением меню
+int buffer;												// Буффер для работы с файлом
 
-// Текстуры
+// Функция для проверки клика на спрайте (для кнопок)
+
+bool MouseTrigger(sf::RectangleShape &av_Sprite, sf::RenderWindow &av_Window)
+{
+
+	int mouseX = sf::Mouse::getPosition().x;
+	int mouseY = sf::Mouse::getPosition().y;
+
+	sf::Vector2i windowPosition = av_Window.getPosition();
+
+	if (mouseX > av_Sprite.getPosition().x + windowPosition.x && mouseX < (av_Sprite.getPosition().x + av_Sprite.getGlobalBounds().width + windowPosition.x)
+		&& mouseY > av_Sprite.getPosition().y + windowPosition.y + 30 && mouseY < (av_Sprite.getPosition().y + av_Sprite.getGlobalBounds().height + windowPosition.y + 30))
+	{
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	return false;
+
+}
+
+// Текстуры и шейпы
+
 sf::Texture bird;
 sf::Texture bird_d;
 sf::Texture bird_u;
@@ -51,6 +77,9 @@ sf::Texture Medal_s;
 sf::Texture Medal_g;
 sf::Texture Medal_p;
 sf::Texture Newrecord;
+sf::Texture Getready;
+sf::Texture Hint;
+sf::Texture Start;
 sf::RectangleShape bg(sf::Vector2f(800, 600));
 sf::RectangleShape ground(sf::Vector2f(994, 112));
 sf::RectangleShape menu(sf::Vector2f(400, 204));
@@ -61,6 +90,9 @@ sf::RectangleShape medal_s(sf::Vector2f(75, 75));
 sf::RectangleShape medal_g(sf::Vector2f(75, 75));
 sf::RectangleShape medal_p(sf::Vector2f(75, 75));
 sf::RectangleShape newrecord(sf::Vector2f(50, 20));
+sf::RectangleShape getready(sf::Vector2f(250, 75));
+sf::RectangleShape hint(sf::Vector2f(200, 200));
+sf::RectangleShape start(sf::Vector2f(200, 65));
 
 // Класс для работы с пайпами
 
@@ -89,7 +121,7 @@ public:
 			window.draw(*pipes[pipes.size() - 1], sf::RenderStates());
 		}
 	}
-	void update(sf::RenderWindow &window)
+	void update(sf::RenderWindow &window, int &game)
 	{
 		for (int i = 0; i < pipes.size() - 1 / 2; i++) {
 			if (game == 1) // Если игра, то двигаем пайпы
@@ -151,30 +183,33 @@ public:
 public:
 	void drawPlayer(sf::RenderWindow &window)
 	{	
-		playerObj.setPosition(200, 200);
+		playerObj.setPosition(200, 400);
 		playerObj.setTexture(&bird, true);
 		window.draw(playerObj, sf::RenderStates());
 	}
-	void gravity(sf::RenderWindow &window)
+	void gravity(sf::RenderWindow &window,int &game)
 	{
+		//std::cout << game << '\n';
 		v = v + g * t; // Формула для нахождения скорости через ускорение
-		if (playerObj.getPosition().y < 485) {
-			playerObj.move(0, v*0.03);
+		if (goTime < 30) {
+			if (playerObj.getPosition().y < 485) {
+				playerObj.move(0, v*0.03);
+			}
+			else {
+				playerObj.setPosition(playerObj.getPosition().x, 485);
+			}
+			if (v < 0 && rotateNum > -8) {
+				playerObj.rotate(-1);
+				rotateNum--;
+			}
+			if (v == 0)
+				rotateNum = 0;
+			if (v > 0 && rotateNum < 8) {
+				playerObj.rotate(1);
+				rotateNum++;
+			}
 		}
-		else {
-			playerObj.setPosition(playerObj.getPosition().x, 485);
-		}
-		if (v < 0 && rotateNum > -8) {
-			playerObj.rotate(-1);
-			rotateNum--;
-		}
-		if (v == 0)
-			rotateNum = 0;
-		if (v > 0 && rotateNum < 8) {
-			playerObj.rotate(1);
-			rotateNum++;
-		}
-		if (game == 1) {
+		if (game != -1) {
 			swing++;
 		} else {
 			swing = 13;
@@ -198,7 +233,7 @@ public:
 		window.draw(playerObj, sf::RenderStates());
 		t++;
 	}
-	void up()
+	void up(int &game)
 	{
 		if (playerObj.getPosition().y > 10 && game == 1) { // Если игра 
 			t = 0;
@@ -211,8 +246,6 @@ public:
 
 class utils
 {
-public:
-	int start, gate, window;
 public:
 	void drawScore(sf::RenderWindow &window)
 	{
@@ -245,19 +278,19 @@ public:
 		ground.setPosition(0, 535);
 		window.draw(ground, sf::RenderStates());
 	}
-	void updateGround(sf::RenderWindow &window)
+	void updateGround(sf::RenderWindow &window, int &game)
 	{
 		if (groundMove > 2) {
 			ground.setPosition(0, 535);
 			groundMove = 0;
 		}
-		if (game == 1) {
+		if (game != -1) {
 			groundMove++;
 			ground.move(-speed, 0);
 		}
 			window.draw(ground, sf::RenderStates());
 	}
-	void gameOver(sf::RenderWindow &window)
+	void gameOver(sf::RenderWindow &window, int &game)
 	{
 		game = -1;
 		goTime++;
@@ -294,7 +327,7 @@ public:
 			// Выравнивание результата
 			if (ctrScore < 9)
 				score.setPosition(540, 230);
-			if (ctrScore > 10 && ctrScore < 100)
+			if (ctrScore >= 10 && ctrScore < 100)
 				score.setPosition(525, 230);
 			if (ctrScore > 100)
 				score.setPosition(510, 230);
@@ -308,9 +341,9 @@ public:
 			// Выравнивание результата
 			if (bestScore < 9)
 				best.setPosition(540, 300);
-			if (bestScore > 10 && ctrScore < 100)
+			if (bestScore >= 10 && ctrScore < 100)
 				best.setPosition(525, 300);
-			if (bestScore > 100)
+			if (bestScore >= 100)
 				best.setPosition(505, 300);
 
 			// Новый рекорд
@@ -321,24 +354,68 @@ public:
 			window.draw(menu, sf::RenderStates());
 			window.draw(gameover, sf::RenderStates());
 			window.draw(restart, sf::RenderStates());
-			if (ctrScore < 10)
+			if (ctrScore >= 10 && ctrScore < 20)
 				window.draw(medal_b, sf::RenderStates());
-			if (ctrScore >= 10 && ctrScore <= 20)
+			if (ctrScore >= 20 && ctrScore < 30)
 				window.draw(medal_s, sf::RenderStates());
-			if (ctrScore > 20 && ctrScore < 30)
+			if (ctrScore >= 30 && ctrScore < 40)
 				window.draw(medal_g, sf::RenderStates());
-			if (ctrScore >= 30)
+			if (ctrScore >= 40)
 				window.draw(medal_p, sf::RenderStates());
 			window.draw(score, sf::RenderStates());
 			window.draw(best, sf::RenderStates());
-			if (ctrScore > bestScore)
-			window.draw(newrecord, sf::RenderStates());
-
-
-			////////////////////////////////////   ЗАПИСЬ В ФАЙЛ \\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
+			if (ctrScore >= bestScore) {
+				window.draw(newrecord, sf::RenderStates());
+				
+				std::ofstream fout("data.ini", std::ios_base::out | std::ios_base::trunc);
+				fout << ctrScore;
+				fout.close();
+				bestScore = ctrScore;
+			}
 		}
 
+	}
+
+	void gameStart(sf::RenderWindow &window, int &game) {
+		game = 0;
+		getready.setTexture(&Getready);
+		getready.setPosition(270, 135);
+		
+		hint.setTexture(&Hint);
+		hint.setPosition(300, 220);
+
+		start.setTexture(&Start);
+		start.setPosition(300, 450);
+
+		window.draw(hint, sf::RenderStates());
+		window.draw(getready, sf::RenderStates());
+		window.draw(start, sf::RenderStates());
+
+		playerObj.setPosition(200, 300);
+		playerObj.setRotation(0);
+	}
+
+	void realStart(sf::RenderWindow &window, int &game, int &ctrScore, int &goTime, int &v, int &t, int &lastGate, int &itr, int &pipeCount, int &rotateNum, int &groundMove, int &swing, int &bestScore) {
+		game = 1;
+		pipes.clear();
+		ctrScore = 0;
+		goTime = 0;
+		v = 0;
+		t = 0;
+		itr = 0;
+		pipeCount = 0;
+		rotateNum = 0;
+		groundMove = 0;
+		swing = 0;
+		
+		std::ifstream fin("data.ini");
+		fin >> buffer;
+		fin.close();
+
+		bestScore = buffer;
+
+		//std::cout << bestScore << '\n';
+		//AllPipes.drawPipes(window);
 	}
 
 };
@@ -352,60 +429,81 @@ utils Utils;
 // Основная функция
 int _tmain(int argc, _TCHAR* argv[])
 {
-		if (!bird_d.loadFromFile("bird-d.png"))
-		{
-			std::cout << "pic!!";
-		}
-		if (!bird.loadFromFile("bird.png"))
-		{
-			std::cout << "pic!!";
-		}
-		if (!bird_u.loadFromFile("bird-u.png"))
-		{
-			std::cout << "pic!!";
-		}
+	//HWND hWnd = GetConsoleWindow();
+	//ShowWindow(hWnd, SW_HIDE);
 
-	if (!font.loadFromFile("04B_19__.ttf"))
+	if (!bird_d.loadFromFile("res/textures/bird-d.png"))
+	{
+		std::cout << "pic!!";
+	}
+	if (!bird.loadFromFile("res/textures/bird.png"))
+	{
+		std::cout << "pic!!";
+	}
+	if (!bird_u.loadFromFile("res/textures/bird-u.png"))
+	{
+		std::cout << "pic!!";
+	}
+
+	if (!font.loadFromFile("res/fonts/04B_19__.ttf"))
 	{
 		std::cout << "font!!";
 	}
-	if (!pipeUp.loadFromFile("pipeUp.png"))
+	if (!pipeUp.loadFromFile("res/textures/pipeUp.png"))
 	{
 		std::cout << "font!!";
 	}
-	if (!pipeDown.loadFromFile("pipeDown.png"))
+	if (!pipeDown.loadFromFile("res/textures/pipeDown.png"))
 	{
 		std::cout << "font!!";
 	}
-	if (!background.loadFromFile("background.png"))
+	if (!background.loadFromFile("res/textures/background.png"))
 		return -1;
 
-	if (!Ground.loadFromFile("ground.png"))
+	if (!Ground.loadFromFile("res/textures/ground.png"))
 		return -1;
 	
-	if (!Menu.loadFromFile("menu_bg.png"))
+	if (!Menu.loadFromFile("res/textures/menu_bg.png"))
 		return -1;
 	
-	if (!GameOver.loadFromFile("gameOver.png"))
+	if (!GameOver.loadFromFile("res/textures/gameOver.png"))
 		return -1;
 
-	if (!Restart.loadFromFile("restart.png"))
+	if (!Restart.loadFromFile("res/textures/restart.png"))
 		return -1;
 	
-	if (!Medal_b.loadFromFile("medal-b.png"))
+	if (!Medal_b.loadFromFile("res/textures/medal-b.png"))
 		return -1;
 
-	if (!Medal_s.loadFromFile("medal-s.png"))
+	if (!Medal_s.loadFromFile("res/textures/medal-s.png"))
 		return -1;
 
-	if (!Medal_g.loadFromFile("medal-g.png"))
+	if (!Medal_g.loadFromFile("res/textures/medal-g.png"))
 		return -1;
 
-	if (!Medal_p.loadFromFile("medal-p.png"))
+	if (!Medal_p.loadFromFile("res/textures/medal-p.png"))
 		return -1;
 
-	if (!Newrecord.loadFromFile("newrecord.png"))
+	if (!Newrecord.loadFromFile("res/textures/newrecord.png"))
 		return -1;
+
+	if (!Getready.loadFromFile("res/textures/getready.png"))
+		return -1;
+
+	if (!Hint.loadFromFile("res/textures/hint.png"))
+		return -1;
+
+	if (!Start.loadFromFile("res/textures/start.png"))
+		return -1;
+	// Создаем объект для чтения из файла
+	std::ifstream fin("data.ini");
+	fin >> buffer;
+	fin.close();
+	bestScore = buffer;
+
+	//std::cout << bestScore << '\n';
+
+
 	//04B_19__
 	// Инициализируем окно
 	sf::RenderWindow window(sf::VideoMode(800, 600), "Birdy Flap");
@@ -418,6 +516,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	Player.drawPlayer(window);
 	Utils.drawScore(window);
 	Utils.drawGround(window);
+	if (game == 0) {
+		Utils.gameStart(window, game);
+	}
 	window.display();
 	
 	while (window.isOpen())
@@ -426,31 +527,50 @@ int _tmain(int argc, _TCHAR* argv[])
 		//std::cout << elapsed.asMicroseconds() << '\n';
 		clock.restart();
 		sf::Event event;
+		if (game == 1 && pipes.size() == 0)
+		AllPipes.drawPipes(window);
+
 		while (window.pollEvent(event))
 		{
+			if ((((sf::Mouse::isButtonPressed(sf::Mouse::Left) && MouseTrigger(start, window)) || sf::Keyboard::isKeyPressed(sf::Keyboard::Space))) && game == 0)
+			{
+				std::cout << game << "\n";
+				//if ((MouseTrigger(start, window) || sf::Keyboard::isKeyPressed(sf::Keyboard::F5)) && game != 1)
+				Utils.realStart(window, game, ctrScore, goTime, v, t, lastGate, itr, pipeCount, rotateNum, groundMove, swing, bestScore);
+			}
+
 			if (event.type == sf::Event::Closed)
 				window.close();
-			if (sf::Keyboard::Space)
-				Player.up();
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+				Player.up(game);
+
+			if ((((sf::Mouse::isButtonPressed(sf::Mouse::Left) && MouseTrigger(restart, window)) || sf::Keyboard::isKeyPressed(sf::Keyboard::Space))) && game == -1 && goTime >= 30)
+			{
+					Utils.gameStart(window, game);
+			}
 		}
 		
 		// Периодически перемещаем пайпы из начала в конец
 		if (pipes[pipeCount]->getPosition().x + 90 < 0) {
 			AllPipes.transition();
 		}
-		 
-		//std::cout << swing << std::endl;
+
+		//std::cout << game << std::endl;
 		
 		// Обновление в этом кадре
 		window.clear();
 		Utils.drawBackground(window);
-		AllPipes.update(window); // пайпы
-		Player.gravity(window);
-		Utils.updateGround(window);
+		if (game == 1 || game == -1)
+		AllPipes.update(window,game); // пайпы
+		Player.gravity(window,game);
+		Utils.updateGround(window,game);
 		if (goTime < 30) 
 			Utils.drawScore(window);
 		if (game == -1)
-			Utils.gameOver(window);
+			Utils.gameOver(window,game);
+		if (game == 0) {
+			Utils.gameStart(window, game);
+		}
 		window.display();
 		
 		// Добавляем итерацию к счетчику
