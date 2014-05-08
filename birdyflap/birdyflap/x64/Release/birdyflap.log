@@ -1,4 +1,4 @@
-﻿Сборка начата 02.05.2014 15:55:06.
+﻿Сборка начата 06.05.2014 11:31:47.
      1>Проект "C:\Users\Алексей\documents\visual studio 2013\Projects\birdyflap\birdyflap\birdyflap.vcxproj" в узле 2 (целевые объекты Build).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I"C:\Program Files\SFML\include" /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D SFML_STATIC /D WIN32 /D NDEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"x64\Release\birdyflap.pch" /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt birdyflap.cpp
@@ -26,4 +26,4 @@
 
 Сборка успешно завершена.
 
-Затраченное время: 00:00:04.66
+Затраченное время: 00:00:05.16

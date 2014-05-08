@@ -429,8 +429,8 @@ utils Utils;
 // Основная функция
 int _tmain(int argc, _TCHAR* argv[])
 {
-	//HWND hWnd = GetConsoleWindow();
-	//ShowWindow(hWnd, SW_HIDE);
+	HWND hWnd = GetConsoleWindow();
+	ShowWindow(hWnd, SW_HIDE);
 
 	if (!bird_d.loadFromFile("res/textures/bird-d.png"))
 	{
