@@ -93,6 +93,7 @@ sf::RectangleShape newrecord(sf::Vector2f(50, 20));
 sf::RectangleShape getready(sf::Vector2f(250, 75));
 sf::RectangleShape hint(sf::Vector2f(200, 200));
 sf::RectangleShape start(sf::Vector2f(200, 65));
+sf::Image icon;
 
 // Класс для работы с пайпами
 
@@ -325,7 +326,7 @@ public:
 			score.setStyle(sf::Text::Bold);
 
 			// Выравнивание результата
-			if (ctrScore < 9)
+			if (ctrScore < 10)
 				score.setPosition(540, 230);
 			if (ctrScore >= 10 && ctrScore < 100)
 				score.setPosition(525, 230);
@@ -339,7 +340,7 @@ public:
 			best.setStyle(sf::Text::Bold);
 
 			// Выравнивание результата
-			if (bestScore < 9)
+			if (bestScore < 10)
 				best.setPosition(540, 300);
 			if (bestScore >= 10 && ctrScore < 100)
 				best.setPosition(525, 300);
@@ -495,6 +496,10 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	if (!Start.loadFromFile("res/textures/start.png"))
 		return -1;
+
+
+	if (!icon.loadFromFile("res/textures/icon.png"))
+		return -1;
 	// Создаем объект для чтения из файла
 	std::ifstream fin("data.ini");
 	fin >> buffer;
@@ -506,7 +511,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	//04B_19__
 	// Инициализируем окно
-	sf::RenderWindow window(sf::VideoMode(800, 600), "Birdy Flap");
+	sf::RenderWindow window(sf::VideoMode(800, 600), "Flappy Bird");
+	window.setIcon(49, 44, icon.getPixelsPtr());
 	window.setFramerateLimit(30); // Ограничиваем FPS
 	// Создаем таймер
 	sf::Clock clock;
